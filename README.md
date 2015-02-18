@@ -26,7 +26,7 @@ public function newCollection(array $models = array())
 
 Now each time you get a collection of that model, it will be an instance of **TypiCMS\NestableCollection** in place of **Illuminate\Database\Eloquent\Collection**.  
 
-If you want a tree models, simply call nest method on the collection :
+If you want a tree of models, simply call the nest method :
 
 ```php
 Model::get()->nest();
