@@ -5,7 +5,7 @@ A Laravel Package that extends Collection to handle unlimited nested items follo
 Run ```composer require typicms/nestablecollection```
 
 ## Usage
-The model must have a *position* and *parent_id* attributes :
+The model must have a **position** and **parent_id** attributes :
 
 ```php
 protected $fillable = array(
@@ -24,9 +24,9 @@ public function newCollection(array $models = array())
 }
 ```
 
-Now each time you get a collection of that model, it will be an instance of TypiCMS\NestableCollection in place of Illuminate\Database\Eloquent\Collection.  
+Now each time you get a collection of that model, it will be an instance of **TypiCMS\NestableCollection** in place of **Illuminate\Database\Eloquent\Collection**.  
 
-If you want a tree of a model, simply call nest method on collection :
+If you want a tree models, simply call nest method on the collection :
 
 ```php
 Model::get()->nest();
