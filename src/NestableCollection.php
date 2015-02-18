@@ -88,4 +88,14 @@ class NestableCollection extends Collection
     {
         return $this->total;
     }
+
+    /**
+     * Get total items for laravel 4 compatibility
+     *
+     * @return int
+     */
+    public function getTotal()
+    {
+        return $this->total():
+    }
 }
