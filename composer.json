@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TypiCMS\\NestableCollection\\": "src/"
+            "TypiCMS\\": "src/"
         }
     },
     "minimum-stability": "stable"
