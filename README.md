@@ -20,7 +20,7 @@ and must have this method :
 ```php
 public function newCollection(array $models = array())
 {
-    return new NestableCollection($models, 'parent_id');
+    return new \TypiCMS\NestableCollection($models, 'parent_id');
 }
 ```
 
