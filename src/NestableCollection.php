@@ -15,14 +15,14 @@ use Illuminate\Support\Collection as BaseCollection;
 
 class NestableCollection extends Collection
 {
-    private $total = 0;
-    private $parentKey = null;
+    private $total;
+    private $parentColumn;
 
-    public function __construct(array $items = array(), $parentKey = 'parent_id')
+    public function __construct($items = array())
     {
         parent::__construct($items);
+        $this->parentColumn = 'parent_id';
         $this->total = count($items);
-        $this->parentKey = $parentKey;
     }
 
     /**
@@ -32,8 +32,8 @@ class NestableCollection extends Collection
      */
     public function nest()
     {
-        $parentKey = $this->parentKey;
-        if (! $parentKey) {
+        $parentColumn = $this->parentColumn;
+        if (! $parentColumn) {
             return $this;
         }
 
@@ -51,8 +51,8 @@ class NestableCollection extends Collection
 
         // add items to children collection
         foreach ($this->items as $key => $item) {
-            if ($item->$parentKey && isset($this->items[$item->$parentKey])) {
-                $this->items[$item->$parentKey]->items->push($item);
+            if ($item->$parentColumn && isset($this->items[$item->$parentColumn])) {
+                $this->items[$item->$parentColumn]->items->push($item);
                 $keysToDelete[] = $item->id;
             }
         }
