@@ -17,9 +17,7 @@ protected $fillable = array(
 and must use the following trait:
 
 ```php
-
 use TypiCMS\NestableTrait;
-
 ```
 
 Now each time you get a collection of that model, it will be an instance of **TypiCMS\NestableCollection** in place of **Illuminate\Database\Eloquent\Collection**.  
