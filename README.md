@@ -29,3 +29,16 @@ Model::orderBy('parent_id')->get()->nest();
 ```
 
 Of course you will probably want a position column as well. So you will have to order first by parent_id asc and then by position asc.
+
+## Indented and flattened list
+
+```listsFlattened()``` method generate the tree as a flattened list with id as keys and title as values, perfect for select/option, for example :
+
+```php
+[
+    '22' => 'Item 1 Title',
+    '10' => '    Child 1 Title',
+    '17' => '    Child 2 Title',
+    '14' => 'Item 2 Title',
+]
+```
