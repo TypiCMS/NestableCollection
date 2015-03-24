@@ -42,3 +42,15 @@ Of course you will probably want a position column as well. So you will have to 
     '14' => 'Item 2 Title',
 ]
 ```
+
+To use it, first call the `nest()` method, followed by the `listsFlattened()` method:
+
+``` php
+Model::orderBy('parent_id')->get()->nest()->listsFlattened();
+```
+
+By default it will look for a `title` column. You send as first parameter a custom column name:
+
+``` php
+Model::orderBy('parent_id')->get()->nest()->listsFlattened('name');
+```
