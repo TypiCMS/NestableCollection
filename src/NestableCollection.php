@@ -80,7 +80,7 @@ class NestableCollection extends Collection
         foreach ($collection as $item) {
             $flattened[$item->id] = str_repeat($indentChars, $level) . $item->$column;
             if ($item->items) {
-                $this->listsFlattened($column, $item->items, $level + 1, $flattened);
+                $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars);
             }
         }
 
