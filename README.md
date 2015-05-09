@@ -1,4 +1,7 @@
 # NestableCollection
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901/mini.png)](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901)
+
 A Laravel Package that extends Collection to handle unlimited nested items following adjacency list model.
 
 ## Installation
