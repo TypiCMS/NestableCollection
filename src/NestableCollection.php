@@ -30,8 +30,9 @@ class NestableCollection extends Collection
      *
      * @return mixed boolean|NestableCollection
      */
-    public function nest()
+    public function nest($parentColumn=null)
     {
+        if($parentColumn == null)
         $parentColumn = $this->parentColumn;
         if (! $parentColumn) {
             return $this;
