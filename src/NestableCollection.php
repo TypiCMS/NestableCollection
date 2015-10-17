@@ -76,7 +76,7 @@ class NestableCollection extends Collection
      */
     public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;')
     {
-        $collection = $collection ? : $this ;
+        $collection = $collection ?: $this;
         foreach ($collection as $item) {
             $flattened[$item->id] = str_repeat($indentChars, $level) . $item->$column;
             if ($item->items) {
