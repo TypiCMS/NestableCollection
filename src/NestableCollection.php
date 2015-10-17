@@ -18,7 +18,7 @@ class NestableCollection extends Collection
     private $total;
     private $parentColumn;
 
-    public function __construct($items = array())
+    public function __construct($items = [])
     {
         parent::__construct($items);
         $this->parentColumn = 'parent_id';
@@ -26,25 +26,25 @@ class NestableCollection extends Collection
     }
 
     /**
-     * Nest items
+     * Nest items.
      *
      * @return mixed boolean|NestableCollection
      */
     public function nest()
     {
         $parentColumn = $this->parentColumn;
-        if (! $parentColumn) {
+        if (!$parentColumn) {
             return $this;
         }
 
         // Set id as keys
         $this->items = $this->getDictionary();
 
-        $keysToDelete = array();
+        $keysToDelete = [];
 
         // add empty children collection.
         $this->each(function ($item) {
-            if (! $item->items) {
+            if (!$item->items) {
                 $item->items = App::make('Illuminate\Support\Collection');
             }
         });
@@ -65,20 +65,21 @@ class NestableCollection extends Collection
 
     /**
      * Recursive function that flatten a nested Collection
-     * with characters (default is four spaces)
+     * with characters (default is four spaces).
      *
-     * @param  BaseCollection|null $collection
-     * @param  string              $column
-     * @param  integer             $level
-     * @param  array               &$flattened
-     * @param  string              $indentChars
+     * @param BaseCollection|null $collection
+     * @param string              $column
+     * @param int                 $level
+     * @param array               &$flattened
+     * @param string              $indentChars
+     *
      * @return array
      */
     public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;')
     {
         $collection = $collection ?: $this;
         foreach ($collection as $item) {
-            $flattened[$item->id] = str_repeat($indentChars, $level) . $item->$column;
+            $flattened[$item->id] = str_repeat($indentChars, $level).$item->$column;
             if ($item->items) {
                 $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars);
             }
@@ -88,7 +89,7 @@ class NestableCollection extends Collection
     }
 
     /**
-     * Get total items in nested collection
+     * Get total items in nested collection.
      *
      * @return int
      */
@@ -98,7 +99,7 @@ class NestableCollection extends Collection
     }
 
     /**
-     * Get total items for laravel 4 compatibility
+     * Get total items for laravel 4 compatibility.
      *
      * @return int
      */
