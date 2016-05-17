@@ -30,7 +30,7 @@ class NestableCollection extends Collection
      *
      * @return mixed boolean|NestableCollection
      */
-    public function nest()
+    public function nest($exclude_ids = [])
     {
         $parentColumn = $this->parentColumn;
         if (!$parentColumn) {
@@ -51,6 +51,10 @@ class NestableCollection extends Collection
 
         // add items to children collection
         foreach ($this->items as $key => $item) {
+            if (in_array($item->id, $exclude_ids)) {
+                $keysToDelete[] = $item->id;
+                continue;
+            }
             if ($item->$parentColumn && isset($this->items[$item->$parentColumn])) {
                 $this->items[$item->$parentColumn]->items->push($item);
                 $keysToDelete[] = $item->id;
