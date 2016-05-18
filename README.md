@@ -52,7 +52,7 @@ To use it, first call the `nest()` method, followed by the `listsFlattened()` me
 Model::orderBy('parent_id')->get()->nest()->listsFlattened();
 ```
 
-By default it will look for a `title` column. You send as first parameter a custom column name:
+By default it will look for a `title` column. You can send a custom column name as first parameter:
 
 ``` php
 Model::orderBy('parent_id')->get()->nest()->listsFlattened('name');
