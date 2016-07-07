@@ -28,41 +28,43 @@ class NestableCollection extends Collection
     /**
      * Nest items.
      *
-     * @return mixed boolean|NestableCollection
+     * @return mixed NestableCollection
      */
-    public function nest($exclude_ids = [])
+    public function nest()
     {
         $parentColumn = $this->parentColumn;
         if (!$parentColumn) {
             return $this;
         }
 
-        // Set id as keys
+        // Set id as keys.
         $this->items = $this->getDictionary();
 
         $keysToDelete = [];
 
-        // add empty children collection.
-        $this->each(function ($item) {
+        $collection = $this->each(function ($item) {
+            // Add empty collection to each items.
             if (!$item->items) {
                 $item->items = App::make('Illuminate\Support\Collection');
             }
+        })->reject(function ($item) use ($parentColumn) {
+            // Remove items with a missing ancestor.
+            if ($item->$parentColumn) {
+                $missingAncestor = $this->anAncestorIsMissing($item);
+                return $missingAncestor;
+            }
         });
 
-        // add items to children collection
-        foreach ($this->items as $key => $item) {
-            if (in_array($item->id, $exclude_ids)) {
-                $keysToDelete[] = $item->id;
-                continue;
-            }
-            if ($item->$parentColumn && isset($this->items[$item->$parentColumn])) {
-                $this->items[$item->$parentColumn]->items->push($item);
+        // Add items to children collection.
+        foreach ($collection->items as $key => $item) {
+            if ($item->$parentColumn && isset($collection[$item->$parentColumn])) {
+                $collection[$item->$parentColumn]->items->push($item);
                 $keysToDelete[] = $item->id;
             }
         }
 
-        // Delete moved items
-        $this->items = array_values(array_except($this->items, $keysToDelete));
+        // Delete moved items.
+        $this->items = array_values(array_except($collection->items, $keysToDelete));
 
         return $this;
     }
@@ -90,6 +92,27 @@ class NestableCollection extends Collection
         }
 
         return $flattened;
+    }
+
+    /**
+     * Check if an ancestor is missing.
+     *
+     * @param $item
+     *
+     * @return boolean
+     */
+    public function anAncestorIsMissing($item)
+    {
+        $parentColumn = $this->parentColumn;
+        if (!$item->$parentColumn) {
+            return false;
+        }
+        if (!$this->has($item->$parentColumn)) {
+            return true;
+        }
+        $parent = $this[$item->$parentColumn];
+
+        return $this->anAncestorIsMissing($parent);
     }
 
     /**
