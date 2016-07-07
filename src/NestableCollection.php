@@ -51,6 +51,7 @@ class NestableCollection extends Collection
             // Remove items with a missing ancestor.
             if ($item->$parentColumn) {
                 $missingAncestor = $this->anAncestorIsMissing($item);
+
                 return $missingAncestor;
             }
         });
@@ -99,7 +100,7 @@ class NestableCollection extends Collection
      *
      * @param $item
      *
-     * @return boolean
+     * @return bool
      */
     public function anAncestorIsMissing($item)
     {
