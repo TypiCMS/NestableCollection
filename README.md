@@ -1,6 +1,7 @@
 # NestableCollection
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901/mini.png)](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901)
+[![StyleCI](https://styleci.io/repos/30971812/shield)](https://styleci.io/repos/30971812)
 
 A Laravel/Lumen Package that extends Collection to handle unlimited nested items following adjacency list model.
 
@@ -23,7 +24,7 @@ and must use the following trait:
 use TypiCMS\NestableTrait;
 ```
 
-Now each time you get a collection of that model, it will be an instance of **TypiCMS\NestableCollection** in place of **Illuminate\Database\Eloquent\Collection**.  
+Now each time you get a collection of that model, it will be an instance of **TypiCMS\NestableCollection** in place of **Illuminate\Database\Eloquent\Collection**.
 
 If you want a tree of models, simply call the nest method on a collection ordered by parent_id asc :
 
