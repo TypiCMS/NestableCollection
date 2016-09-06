@@ -21,7 +21,6 @@ class NestableCollection extends Collection
     public function __construct($items = [])
     {
         parent::__construct($items);
-        $this->parentColumn = 'parent_id';
         $this->total = count($items);
     }
 
