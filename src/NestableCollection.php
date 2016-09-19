@@ -17,6 +17,7 @@ class NestableCollection extends Collection
 {
     private $total;
     private $parentColumn;
+    private $removeItemsWithMissingAncestor = true;
 
     public function __construct($items = [])
     {
@@ -42,19 +43,22 @@ class NestableCollection extends Collection
 
         $keysToDelete = [];
 
+        // Add empty collection to each items.
         $collection = $this->each(function ($item) {
-            // Add empty collection to each items.
             if (!$item->items) {
                 $item->items = App::make('Illuminate\Support\Collection');
             }
-        })->reject(function ($item) use ($parentColumn) {
-            // Remove items with a missing ancestor.
-            if ($item->$parentColumn) {
-                $missingAncestor = $this->anAncestorIsMissing($item);
-
-                return $missingAncestor;
-            }
         });
+
+        // Remove items with missing ancestor.
+        if ($this->removeItemsWithMissingAncestor) {
+            $collection = $this->reject(function ($item) use ($parentColumn) {
+                if ($item->$parentColumn) {
+                    $missingAncestor = $this->anAncestorIsMissing($item);
+                    return $missingAncestor;
+                }
+            });
+        }
 
         // Add items to children collection.
         foreach ($collection->items as $key => $item) {
@@ -93,6 +97,17 @@ class NestableCollection extends Collection
         }
 
         return $flattened;
+    }
+
+    /**
+     * Force keeping items that have a missing ancestor.
+     *
+     * @return NestableCollection
+     */
+    public function noCleaning()
+    {
+        $this->removeItemsWithMissingAncestor = false;
+        return $this;
     }
 
     /**
