@@ -55,6 +55,7 @@ class NestableCollection extends Collection
             $collection = $this->reject(function ($item) use ($parentColumn) {
                 if ($item->$parentColumn) {
                     $missingAncestor = $this->anAncestorIsMissing($item);
+
                     return $missingAncestor;
                 }
             });
@@ -107,6 +108,7 @@ class NestableCollection extends Collection
     public function noCleaning()
     {
         $this->removeItemsWithMissingAncestor = false;
+
         return $this;
     }
 
