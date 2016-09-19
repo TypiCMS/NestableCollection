@@ -49,12 +49,22 @@ Of course you will probably want a position column as well. So you will have to 
 
 To use it, first call the `nest()` method, followed by the `listsFlattened()` method:
 
-``` php
+```php
 Model::orderBy('parent_id')->get()->nest()->listsFlattened();
 ```
 
 By default it will look for a `title` column. You can send a custom column name as first parameter:
 
-``` php
+```php
 Model::orderBy('parent_id')->get()->nest()->listsFlattened('name');
 ```
+
+## Nesting a subtree
+
+This package remove items that have missing ancestor, this doesn’t allow you to nest a branch of a tree.
+To avoid this, you can use the ```noCleaning()``` method:
+
+```php
+Model::orderBy('parent_id')->get()->noCleaning()->nest();
+```
+
