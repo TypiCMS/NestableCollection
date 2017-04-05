@@ -18,6 +18,7 @@ class NestableCollection extends Collection
     private $total;
     private $parentColumn;
     private $removeItemsWithMissingAncestor = true;
+    private $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;';
 
     public function __construct($items = [])
     {
@@ -87,9 +88,10 @@ class NestableCollection extends Collection
      *
      * @return array
      */
-    public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;')
+    public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = null)
     {
         $collection = $collection ?: $this;
+        $indentChars = $indentChars ?: $this->indentChars;
         foreach ($collection as $item) {
             $flattened[$item->id] = str_repeat($indentChars, $level).$item->$column;
             if ($item->items) {
@@ -98,6 +100,17 @@ class NestableCollection extends Collection
         }
 
         return $flattened;
+    }
+
+    /**
+     * Change the default indent characters when flattening lists
+     *
+     * @param string $indentChars
+     * @return $this
+     */
+    public function setIndent(string $indentChars) {
+        $this->indentChars = $indentChars;
+        return $this;
     }
 
     /**
