@@ -59,6 +59,23 @@ By default it will look for a `title` column. You can send a custom column name 
 Model::orderBy('parent_id')->get()->nest()->listsFlattened('name');
 ```
 
+Four spaces are used to indent by default, to use your own use the `setIndent()` method, followed by the `listsFlattened()` method:
+
+```php
+Model::orderBy('parent_id')->get()->nest()->setIndent('> ')->listsFlattened();
+```
+
+Results:
+
+```php
+[
+    '22' => 'Item 1 Title',
+    '10' => '> Child 1 Title',
+    '17' => '> Child 2 Title',
+    '14' => 'Item 2 Title',
+]
+```
+
 ## Nesting a subtree
 
 This package remove items that have missing ancestor, this doesn’t allow you to nest a branch of a tree.
