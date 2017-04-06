@@ -80,12 +80,12 @@ class NestableCollection extends Collection
      * Recursive function that flatten a nested Collection
      * with characters (default is four spaces).
      *
-     * @param string $column
+     * @param string              $column
      * @param BaseCollection|null $collection
-     * @param int $level
-     * @param array &$flattened
-     * @param string|null $indentChars
-     * @param string|boolen|null $parent_string
+     * @param int                 $level
+     * @param array               &$flattened
+     * @param string|null         $indentChars
+     * @param string|boolen|null  $parent_string
      *
      * @return array
      */
@@ -94,16 +94,15 @@ class NestableCollection extends Collection
         $collection = $collection ?: $this;
         $indentChars = $indentChars ?: $this->indentChars;
         foreach ($collection as $item) {
-            if($parent_string) {
-                $item_string = ($parent_string === true)? $item->$column: $parent_string.$indentChars.$item->$column;
-            }
-            else {
+            if ($parent_string) {
+                $item_string = ($parent_string === true) ? $item->$column : $parent_string.$indentChars.$item->$column;
+            } else {
                 $item_string = str_repeat($indentChars, $level).$item->$column;
             }
 
             $flattened[$item->id] = $item_string;
             if ($item->items) {
-                $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars, ($parent_string)? $item_string: null);
+                $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars, ($parent_string) ? $item_string : null);
             }
         }
 
@@ -111,7 +110,7 @@ class NestableCollection extends Collection
     }
 
     /**
-     * Returns a fully qualified version of listsFlattened
+     * Returns a fully qualified version of listsFlattened.
      *
      * @param BaseCollection|null $collection
      * @param string              $column
@@ -127,13 +126,16 @@ class NestableCollection extends Collection
     }
 
     /**
-     * Change the default indent characters when flattening lists
+     * Change the default indent characters when flattening lists.
      *
      * @param string $indentChars
+     *
      * @return $this
      */
-    public function setIndent(string $indentChars) {
+    public function setIndent(string $indentChars)
+    {
         $this->indentChars = $indentChars;
+
         return $this;
     }
 
