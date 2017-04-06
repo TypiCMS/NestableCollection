@@ -80,6 +80,39 @@ class NestableCollection extends Collection
      * Recursive function that flatten a nested Collection
      * with characters (default is four spaces).
      *
+     * @param string $column
+     * @param BaseCollection|null $collection
+     * @param int $level
+     * @param array &$flattened
+     * @param string|null $indentChars
+     * @param string|boolen|null $parent_string
+     *
+     * @return array
+     */
+    public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = null, $parent_string = null)
+    {
+        $collection = $collection ?: $this;
+        $indentChars = $indentChars ?: $this->indentChars;
+        foreach ($collection as $item) {
+            if($parent_string) {
+                $item_string = ($parent_string === true)? $item->$column: $parent_string.$indentChars.$item->$column;
+            }
+            else {
+                $item_string = str_repeat($indentChars, $level).$item->$column;
+            }
+
+            $flattened[$item->id] = $item_string;
+            if ($item->items) {
+                $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars, ($parent_string)? $item_string: null);
+            }
+        }
+
+        return $flattened;
+    }
+
+    /**
+     * Returns a fully qualified version of listsFlattened
+     *
      * @param BaseCollection|null $collection
      * @param string              $column
      * @param int                 $level
@@ -88,18 +121,9 @@ class NestableCollection extends Collection
      *
      * @return array
      */
-    public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = null)
+    public function listsFlattenedQualified($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = null)
     {
-        $collection = $collection ?: $this;
-        $indentChars = $indentChars ?: $this->indentChars;
-        foreach ($collection as $item) {
-            $flattened[$item->id] = str_repeat($indentChars, $level).$item->$column;
-            if ($item->items) {
-                $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars);
-            }
-        }
-
-        return $flattened;
+        return $this->listsFlattened($column, $collection, $level, $flattened, $indentChars, true);
     }
 
     /**
