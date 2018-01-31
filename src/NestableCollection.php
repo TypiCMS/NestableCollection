@@ -132,7 +132,7 @@ class NestableCollection extends Collection
      *
      * @return $this
      */
-    public function setIndent(string $indentChars)
+    public function setIndent($indentChars)
     {
         $this->indentChars = $indentChars;
 
