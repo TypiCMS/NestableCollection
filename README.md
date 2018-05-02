@@ -36,8 +36,8 @@ Of course you will probably want a position column as well. So you will have to 
 
 ## Change the name of subcollections
 
-BBy default, the name of the subcollections is 'items', but you can change it by calling the ```childrenName($name)``` method :
-For example if you want your subcollections being named 'children':
+BBy default, the name of the subcollections is **items**, but you can change it by calling the ```childrenName($name)``` method :
+For example if you want your subcollections being named **children**:
 
 ```php
 $collection->childrenName('children')->nest();
