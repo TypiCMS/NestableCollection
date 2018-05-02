@@ -3,7 +3,7 @@
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901/mini.png)](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901)
 [![StyleCI](https://styleci.io/repos/30971812/shield)](https://styleci.io/repos/30971812)
 
-A Laravel/Lumen Package that extends Collection to handle unlimited nested items following adjacency list model.
+A Laravel/Lumen Package that extends collections to handle nested items following adjacency list model.
 
 ## Installation
 Run ```composer require typicms/nestablecollection```
