@@ -34,6 +34,15 @@ Model::orderBy('parent_id')->get()->nest();
 
 Of course you will probably want a position column as well. So you will have to order first by parent_id asc and then by position asc.
 
+## Change the name of subcollections
+
+BBy default, the name of the subcollections is 'items', but you can change it by calling the ```childrenName($name)``` method :
+For example if you want your subcollections being named 'children':
+
+```php
+$collection->childrenName('children')->nest();
+```
+
 ## Indented and flattened list
 
 ```listsFlattened()``` method generate the tree as a flattened list with id as keys and title as values, perfect for select/option, for example :
