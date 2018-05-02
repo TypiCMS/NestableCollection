@@ -19,12 +19,21 @@ class NestableCollection extends Collection
     private $parentColumn;
     private $removeItemsWithMissingAncestor = true;
     private $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;';
+    private $childrenName;
 
     public function __construct($items = [])
     {
         parent::__construct($items);
         $this->parentColumn = 'parent_id';
         $this->total = count($items);
+        $this->childrenName = 'items';
+    }
+
+    public function childrenName($name)
+    {
+        $this->childrenName = $name;
+
+        return $this;
     }
 
     /**
@@ -46,8 +55,8 @@ class NestableCollection extends Collection
 
         // Add empty collection to each items.
         $collection = $this->each(function ($item) {
-            if (!$item->items) {
-                $item->items = App::make('Illuminate\Support\Collection');
+            if (!$item->{$this->childrenName}) {
+                $item->{$this->childrenName} = App::make('Illuminate\Support\Collection');
             }
         });
 
@@ -65,7 +74,7 @@ class NestableCollection extends Collection
         // Add items to children collection.
         foreach ($collection->items as $key => $item) {
             if ($item->$parentColumn && isset($collection[$item->$parentColumn])) {
-                $collection[$item->$parentColumn]->items->push($item);
+                $collection[$item->$parentColumn]->{$this->childrenName}->push($item);
                 $keysToDelete[] = $item->id;
             }
         }
@@ -101,8 +110,8 @@ class NestableCollection extends Collection
             }
 
             $flattened[$item->id] = $item_string;
-            if ($item->items) {
-                $this->listsFlattened($column, $item->items, $level + 1, $flattened, $indentChars, ($parent_string) ? $item_string : null);
+            if ($item->{$this->childrenName}) {
+                $this->listsFlattened($column, $item->{$this->childrenName}, $level + 1, $flattened, $indentChars, ($parent_string) ? $item_string : null);
             }
         }
 
