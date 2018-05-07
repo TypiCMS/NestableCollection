@@ -19,14 +19,13 @@ class NestableCollection extends Collection
     private $parentColumn;
     private $removeItemsWithMissingAncestor = true;
     private $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;';
-    private $childrenName;
+    private $childrenName = 'items';
 
     public function __construct($items = [])
     {
         parent::__construct($items);
         $this->parentColumn = 'parent_id';
         $this->total = count($items);
-        $this->childrenName = 'items';
     }
 
     public function childrenName($name)
