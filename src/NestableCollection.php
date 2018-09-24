@@ -18,7 +18,7 @@ class NestableCollection extends Collection
     private $total;
     private $parentColumn;
     private $removeItemsWithMissingAncestor = true;
-    private $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;';
+    private $indentChars = '    ';
     private $childrenName = 'items';
 
     public function __construct($items = [])
