@@ -12,10 +12,10 @@ Run ```composer require typicms/nestablecollection```
 The model must have a **parent_id** attributes :
 
 ```php
-protected $fillable = array(
+protected $fillable = [
     'parent_id',
     // …
-}
+];
 ```
 
 and must use the following trait:
