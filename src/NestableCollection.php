@@ -55,7 +55,7 @@ class NestableCollection extends Collection
         // Add empty collection to each items.
         $collection = $this->each(function ($item) {
             if (!$item->{$this->childrenName}) {
-                $item->{$this->childrenName} = App::make('Illuminate\Support\Collection');
+                $item->{$this->childrenName} = app()->make('Illuminate\Support\Collection');
             }
         });
 
