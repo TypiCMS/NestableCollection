@@ -11,6 +11,7 @@ namespace TypiCMS;
 
 use App;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
 
 class NestableCollection extends Collection
@@ -79,7 +80,7 @@ class NestableCollection extends Collection
         }
 
         // Delete moved items.
-        $this->items = array_values(array_except($collection->items, $keysToDelete));
+        $this->items = array_values(Arr::except($collection->items, $keysToDelete));
 
         return $this;
     }
