@@ -48,7 +48,7 @@ class NestableCollection extends Collection
         if (!$parentColumn) {
             return $this;
         }
-        
+
         //check at least one parent_id should be 0
         $checkAtLeastOneParentIdShouldBeZero = $this->pluck($this->parentColumn)->contains(0);
 
