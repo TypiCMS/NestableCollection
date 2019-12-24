@@ -49,11 +49,11 @@ class NestableCollection extends Collection
             return $this;
         }
 
-        //check at least one parent_id should be 0
-        $checkAtLeastOneParentIdShouldBeZero = $this->pluck($this->parentColumn)->contains(0);
+        //check at least one parent_id should be null
+        $checkAtLeastOneParentIdShouldBeNull = $this->pluck($this->parentColumn)->contains(null);
 
-        if (!$checkAtLeastOneParentIdShouldBeZero) {
-            throw new Exception('At least one '.$this->parentColumn.' should be 0.');
+        if (!$checkAtLeastOneParentIdShouldBeNull) {
+            throw new Exception('At least one '.$this->parentColumn.' should be null.');
         }
 
         // Set id as keys.
