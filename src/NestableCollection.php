@@ -10,6 +10,7 @@
 namespace TypiCMS;
 
 use App;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
@@ -46,6 +47,13 @@ class NestableCollection extends Collection
         $parentColumn = $this->parentColumn;
         if (!$parentColumn) {
             return $this;
+        }
+
+        //check at least one parent_id should be null
+        $checkAtLeastOneParentIdShouldBeNull = $this->pluck($this->parentColumn)->contains(null);
+
+        if (!$checkAtLeastOneParentIdShouldBeNull) {
+            throw new Exception('At least one '.$this->parentColumn.' should be null.');
         }
 
         // Set id as keys.
