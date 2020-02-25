@@ -89,12 +89,11 @@ class NestableCollection extends Collection
      * Recursive function that flatten a nested Collection
      * with characters (default is four spaces).
      *
-     * @param string              $column
-     * @param BaseCollection|null $collection
-     * @param int                 $level
-     * @param array               &$flattened
-     * @param string|null         $indentChars
-     * @param string|boolen|null  $parent_string
+     * @param string             $column
+     * @param int                $level
+     * @param array              &$flattened
+     * @param string|null        $indentChars
+     * @param string|boolen|null $parent_string
      *
      * @return array
      */
@@ -121,11 +120,10 @@ class NestableCollection extends Collection
     /**
      * Returns a fully qualified version of listsFlattened.
      *
-     * @param BaseCollection|null $collection
-     * @param string              $column
-     * @param int                 $level
-     * @param array               &$flattened
-     * @param string              $indentChars
+     * @param string $column
+     * @param int    $level
+     * @param array  &$flattened
+     * @param string $indentChars
      *
      * @return array
      */
