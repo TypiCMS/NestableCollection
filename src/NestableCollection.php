@@ -17,9 +17,13 @@ use Illuminate\Support\Collection as BaseCollection;
 class NestableCollection extends Collection
 {
     private $total;
+
     private $parentColumn;
+
     private $removeItemsWithMissingAncestor = true;
+
     private $indentChars = '    ';
+
     private $childrenName = 'items';
 
     public function __construct($items = [])
