@@ -67,7 +67,7 @@ class NestableCollection extends Collection
         // Remove items with missing ancestor.
         if ($this->removeItemsWithMissingAncestor) {
             $collection = $this->reject(function ($item) use ($parentColumn) {
-                if ($item->$parentColumn) {
+                if ($item->{$parentColumn}) {
                     $missingAncestor = $this->anAncestorIsMissing($item);
 
                     return $missingAncestor;
@@ -77,8 +77,8 @@ class NestableCollection extends Collection
 
         // Add items to children collection.
         foreach ($collection->items as $key => $item) {
-            if ($item->$parentColumn && isset($collection[$item->$parentColumn])) {
-                $collection[$item->$parentColumn]->{$this->childrenName}->push($item);
+            if ($item->{$parentColumn} && isset($collection[$item->{$parentColumn}])) {
+                $collection[$item->{$parentColumn}]->{$this->childrenName}->push($item);
                 $keysToDelete[] = $item->id;
             }
         }
@@ -107,9 +107,9 @@ class NestableCollection extends Collection
         $indentChars = $indentChars ?: $this->indentChars;
         foreach ($collection as $item) {
             if ($parent_string) {
-                $item_string = ($parent_string === true) ? $item->$column : $parent_string.$indentChars.$item->$column;
+                $item_string = ($parent_string === true) ? $item->{$column} : $parent_string.$indentChars.$item->{$column};
             } else {
-                $item_string = str_repeat($indentChars, $level).$item->$column;
+                $item_string = str_repeat($indentChars, $level).$item->{$column};
             }
 
             $flattened[$item->id] = $item_string;
@@ -172,13 +172,13 @@ class NestableCollection extends Collection
     public function anAncestorIsMissing($item)
     {
         $parentColumn = $this->parentColumn;
-        if (!$item->$parentColumn) {
+        if (!$item->{$parentColumn}) {
             return false;
         }
-        if (!$this->has($item->$parentColumn)) {
+        if (!$this->has($item->{$parentColumn})) {
             return true;
         }
-        $parent = $this[$item->$parentColumn];
+        $parent = $this[$item->{$parentColumn}];
 
         return $this->anAncestorIsMissing($parent);
     }
