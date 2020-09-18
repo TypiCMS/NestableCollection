@@ -26,6 +26,8 @@ class NestableCollection extends Collection
 
     protected $childrenName = 'items';
 
+    protected $parentRelation = 'parent';
+
     public function __construct($items = [])
     {
         parent::__construct($items);
@@ -219,9 +221,9 @@ class NestableCollection extends Collection
     {
         foreach ($items as $item) {
             if ($parent) {
-                $item->setRelation('parent', $parent);
+                $item->setRelation($this->parentRelation, $parent);
             }
-            $this->setParentsRecursive($item->items, $item);
+            $this->setParentsRecursive($item->{$this->childrenName}, $item);
         }
     }
 }
