@@ -16,15 +16,15 @@ use Illuminate\Support\Collection as BaseCollection;
 
 class NestableCollection extends Collection
 {
-    private $total;
+    protected $total;
 
-    private $parentColumn;
+    protected $parentColumn;
 
-    private $removeItemsWithMissingAncestor = true;
+    protected $removeItemsWithMissingAncestor = true;
 
-    private $indentChars = '    ';
+    protected $indentChars = '    ';
 
-    private $childrenName = 'items';
+    protected $childrenName = 'items';
 
     public function __construct($items = [])
     {
