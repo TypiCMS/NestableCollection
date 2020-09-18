@@ -202,4 +202,26 @@ class NestableCollection extends Collection
     {
         return $this->total();
     }
+
+    /**
+     * Sets the $item->parent relation for each item in the NestableCollection to be the parent it has in the collection
+     * so it can be used without querying the database.
+     *
+     * @return $this
+     */
+    public function setParents()
+    {
+        $this->setParentsRecursive($this);
+        return $this;
+    }
+
+    protected function setParentsRecursive(&$items, &$parent = null)
+    {
+        foreach ($items as $item) {
+            if ($parent) {
+                $item->setRelation('parent', $parent);
+            }
+            $this->setParentsRecursive($item->items, $item);
+        }
+    }
 }
