@@ -1,5 +1,7 @@
 # NestableCollection
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/typicms/nestablecollection.svg?style=flat-square)](https://packagist.org/packages/typicms/nestablecollection)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901/mini.png)](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901)
 [![StyleCI](https://styleci.io/repos/30971812/shield)](https://styleci.io/repos/30971812)
 
