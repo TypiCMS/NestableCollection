@@ -9,7 +9,6 @@
 
 namespace TypiCMS;
 
-use App;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
@@ -78,7 +77,7 @@ class NestableCollection extends Collection
         }
 
         // Add items to children collection.
-        foreach ($collection->items as $key => $item) {
+        foreach ($collection->items as $item) {
             if ($item->{$parentColumn} && isset($collection[$item->{$parentColumn}])) {
                 $collection[$item->{$parentColumn}]->{$this->childrenName}->push($item);
                 $keysToDelete[] = $item->id;
@@ -95,11 +94,11 @@ class NestableCollection extends Collection
      * Recursive function that flatten a nested Collection
      * with characters (default is four spaces).
      *
-     * @param string             $column
-     * @param int                $level
-     * @param array              &$flattened
-     * @param string|null        $indentChars
-     * @param string|boolen|null $parent_string
+     * @param string           $column
+     * @param int              $level
+     * @param array            &$flattened
+     * @param null|string      $indentChars
+     * @param null|bool|string $parent_string
      *
      * @return array
      */
@@ -214,6 +213,7 @@ class NestableCollection extends Collection
     public function setParents()
     {
         $this->setParentsRecursive($this);
+
         return $this;
     }
 
