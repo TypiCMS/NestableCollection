@@ -166,7 +166,7 @@ class NestableCollection extends Collection
     /**
      * Check if an ancestor is missing.
      *
-     * @param $item
+     * @param mixed $item
      *
      * @return bool
      */
