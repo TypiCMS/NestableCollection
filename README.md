@@ -1,16 +1,16 @@
 # NestableCollection
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/typicms/nestablecollection.svg?style=flat-square)](https://packagist.org/packages/typicms/nestablecollection)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901/mini.png)](https://insight.sensiolabs.com/projects/8dc349b4-951d-4098-af3a-c2911937a901)
 [![StyleCI](https://styleci.io/repos/30971812/shield)](https://styleci.io/repos/30971812)
 
 A Laravel/Lumen Package that extends collections to handle nested items following adjacency list model.
 
 ## Installation
-Run ```composer require typicms/nestablecollection```
+
+Run `composer require typicms/nestablecollection`
 
 ## Usage
+
 The model must have a **parent_id** attributes :
 
 ```php
@@ -38,7 +38,7 @@ Of course you will probably want a position column as well. So you will have to 
 
 ## Change the name of subcollections
 
-By default, the name of the subcollections is **items**, but you can change it by calling the ```childrenName($name)``` method :
+By default, the name of the subcollections is **items**, but you can change it by calling the `childrenName($name)` method :
 For example if you want your subcollections being named **children**:
 
 ```php
@@ -47,7 +47,7 @@ $collection->childrenName('children')->nest();
 
 ## Indented and flattened list
 
-```listsFlattened()``` method generate the tree as a flattened list with id as keys and title as values, perfect for select/option, for example :
+`listsFlattened()` method generate the tree as a flattened list with id as keys and title as values, perfect for select/option, for example :
 
 ```php
 [
@@ -90,9 +90,8 @@ Results:
 ## Nesting a subtree
 
 This package remove items that have missing ancestor, this doesn’t allow you to nest a branch of a tree.
-To avoid this, you can use the ```noCleaning()``` method:
+To avoid this, you can use the `noCleaning()` method:
 
 ```php
 Model::orderBy('parent_id')->get()->noCleaning()->nest();
 ```
-
