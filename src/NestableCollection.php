@@ -15,26 +15,26 @@ use Illuminate\Support\Collection as BaseCollection;
 
 class NestableCollection extends Collection
 {
-    protected $total;
+    protected int $total;
 
-    protected $parentColumn;
+    protected string $parentColumn;
 
-    protected $removeItemsWithMissingAncestor = true;
+    protected bool $removeItemsWithMissingAncestor = true;
 
-    protected $indentChars = '    ';
+    protected string $indentChars = '    ';
 
-    protected $childrenName = 'items';
+    protected string $childrenName = 'items';
 
-    protected $parentRelation = 'parent';
+    protected string $parentRelation = 'parent';
 
-    public function __construct($items = [])
+    public function __construct(array $items = [])
     {
         parent::__construct($items);
         $this->parentColumn = 'parent_id';
         $this->total = count($items);
     }
 
-    public function childrenName($name)
+    public function childrenName(string $name): self
     {
         $this->childrenName = $name;
 
@@ -43,10 +43,8 @@ class NestableCollection extends Collection
 
     /**
      * Nest items.
-     *
-     * @return mixed NestableCollection
      */
-    public function nest()
+    public function nest(): self
     {
         $parentColumn = $this->parentColumn;
         if (!$parentColumn) {
@@ -80,6 +78,7 @@ class NestableCollection extends Collection
         foreach ($collection->items as $item) {
             if ($item->{$parentColumn} && isset($collection[$item->{$parentColumn}])) {
                 $collection[$item->{$parentColumn}]->{$this->childrenName}->push($item);
+                // @phpstan-ignore-next-line
                 $keysToDelete[] = $item->id;
             }
         }
@@ -93,29 +92,21 @@ class NestableCollection extends Collection
     /**
      * Recursive function that flatten a nested Collection
      * with characters (default is four spaces).
-     *
-     * @param string           $column
-     * @param int              $level
-     * @param array            &$flattened
-     * @param null|string      $indentChars
-     * @param null|bool|string $parent_string
-     *
-     * @return array
      */
-    public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = null, $parent_string = null)
+    public function listsFlattened(string $column = 'title', BaseCollection $collection = null, int $level = 0, array &$flattened = [], ?string $indentChars = null, mixed $parentString = null): array
     {
         $collection = $collection ?: $this;
         $indentChars = $indentChars ?: $this->indentChars;
         foreach ($collection as $item) {
-            if ($parent_string) {
-                $item_string = ($parent_string === true) ? $item->{$column} : $parent_string.$indentChars.$item->{$column};
+            if ($parentString) {
+                $item_string = ($parentString === true) ? $item->{$column} : $parentString.$indentChars.$item->{$column};
             } else {
                 $item_string = str_repeat($indentChars, $level).$item->{$column};
             }
 
             $flattened[$item->id] = $item_string;
             if ($item->{$this->childrenName}) {
-                $this->listsFlattened($column, $item->{$this->childrenName}, $level + 1, $flattened, $indentChars, ($parent_string) ? $item_string : null);
+                $this->listsFlattened($column, $item->{$this->childrenName}, $level + 1, $flattened, $indentChars, ($parentString) ? $item_string : null);
             }
         }
 
@@ -124,27 +115,16 @@ class NestableCollection extends Collection
 
     /**
      * Returns a fully qualified version of listsFlattened.
-     *
-     * @param string $column
-     * @param int    $level
-     * @param array  &$flattened
-     * @param string $indentChars
-     *
-     * @return array
      */
-    public function listsFlattenedQualified($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = null)
+    public function listsFlattenedQualified(string $column = 'title', BaseCollection $collection = null, int $level = 0, array &$flattened = [], ?string $indentChars = null): array
     {
         return $this->listsFlattened($column, $collection, $level, $flattened, $indentChars, true);
     }
 
     /**
      * Change the default indent characters when flattening lists.
-     *
-     * @param string $indentChars
-     *
-     * @return $this
      */
-    public function setIndent($indentChars)
+    public function setIndent(string $indentChars): self
     {
         $this->indentChars = $indentChars;
 
@@ -153,10 +133,8 @@ class NestableCollection extends Collection
 
     /**
      * Force keeping items that have a missing ancestor.
-     *
-     * @return NestableCollection
      */
-    public function noCleaning()
+    public function noCleaning(): self
     {
         $this->removeItemsWithMissingAncestor = false;
 
@@ -165,12 +143,8 @@ class NestableCollection extends Collection
 
     /**
      * Check if an ancestor is missing.
-     *
-     * @param mixed $item
-     *
-     * @return bool
      */
-    public function anAncestorIsMissing($item)
+    public function anAncestorIsMissing(mixed $item): bool
     {
         $parentColumn = $this->parentColumn;
         if (!$item->{$parentColumn}) {
@@ -186,38 +160,33 @@ class NestableCollection extends Collection
 
     /**
      * Get total items in nested collection.
-     *
-     * @return int
      */
-    public function total()
+    public function total(): int
     {
         return $this->total;
     }
 
     /**
      * Get total items for laravel 4 compatibility.
-     *
-     * @return int
      */
-    public function getTotal()
+    public function getTotal(): int
     {
         return $this->total();
     }
 
     /**
-     * Sets the $item->parent relation for each item in the NestableCollection to be the parent it has in the collection
+     * Sets the $item->parent relation for each item in the
+     * NestableCollection to be the parent it has in the collection
      * so it can be used without querying the database.
-     *
-     * @return $this
      */
-    public function setParents()
+    public function setParents(): self
     {
         $this->setParentsRecursive($this);
 
         return $this;
     }
 
-    protected function setParentsRecursive(&$items, &$parent = null)
+    protected function setParentsRecursive(self &$items, &$parent = null): void
     {
         foreach ($items as $item) {
             if ($parent) {
