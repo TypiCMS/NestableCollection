@@ -186,7 +186,7 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    protected function setParentsRecursive(self &$items, &$parent = null): void
+    protected function setParentsRecursive(BaseCollection &$items, &$parent = null): void
     {
         foreach ($items as $item) {
             if ($parent) {
