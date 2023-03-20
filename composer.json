@@ -18,12 +18,12 @@
         }
     ],
     "require": {
-        "illuminate/database": "~9.0",
-        "illuminate/support": "~9.0"
+        "illuminate/database": "~10.0",
+        "illuminate/support": "~10.0"
     },
     "require-dev": {
-        "illuminate/database": "~9.0",
-        "illuminate/support": "~9.0",
+        "illuminate/database": "~10.0",
+        "illuminate/support": "~10.0",
         "nunomaduro/larastan": "^2.0",
         "orchestra/testbench": "^7.4"
     },
