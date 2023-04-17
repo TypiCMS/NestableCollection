@@ -99,9 +99,9 @@ class NestableCollection extends Collection
         $indentChars = $indentChars ?: $this->indentChars;
         foreach ($collection as $item) {
             if ($parentString) {
-                $item_string = ($parentString === true) ? $item->{$column} : $parentString.$indentChars.$item->{$column};
+                $item_string = ($parentString === true) ? $item->{$column} : $parentString . $indentChars . $item->{$column};
             } else {
-                $item_string = str_repeat($indentChars, $level).$item->{$column};
+                $item_string = str_repeat($indentChars, $level) . $item->{$column};
             }
 
             $flattened[$item->id] = $item_string;
