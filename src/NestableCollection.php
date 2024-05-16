@@ -34,6 +34,13 @@ class NestableCollection extends Collection
         $this->total = count($items);
     }
 
+    public function parentColumn($name)
+    {
+        $this->parentColumn = $name;
+
+        return $this;
+    }
+
     public function childrenName(string $name): self
     {
         $this->childrenName = $name;
