@@ -200,9 +200,7 @@ class NestableCollection extends Collection
     protected function rejectOrphans(): static
     {
         /** @var static */
-        return $this->reject(function ($item) {
-            return $item->{$this->parentColumn} && $this->anAncestorIsMissing($item);
-        });
+        return $this->reject(fn($item) => $item->{$this->parentColumn} && $this->anAncestorIsMissing($item));
     }
 
     /**
