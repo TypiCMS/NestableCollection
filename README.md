@@ -1,6 +1,6 @@
 # NestableCollection
 
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/TypiCMS/NestableCollection/blob/master/LICENCE)
+[![Software License](https://img.shields.io/github/license/TypiCMS/NestableCollection)](https://github.com/TypiCMS/NestableCollection/blob/master/LICENCE)
 [![Tests](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml)
 [![PHPStan](https://github.com/TypiCMS/NestableCollection/actions/workflows/phpstan.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/phpstan.yml)
 [![Pint](https://github.com/TypiCMS/NestableCollection/actions/workflows/pint.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/pint.yml)
