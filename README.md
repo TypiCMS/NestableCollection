@@ -1,16 +1,24 @@
 # NestableCollection
 
+[![Tests](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/TypiCMS/NestableCollection/blob/master/LICENCE)
 
-A Laravel Package that extends collections to handle nested items following adjacency list model.
+A Laravel package that extends Eloquent collections to handle nested items following the adjacency list model.
+
+## Requirements
+
+- PHP ^8.3
+- Laravel 12 or 13
 
 ## Installation
 
-Run `composer require typicms/nestablecollection`
+```bash
+composer require typicms/nestablecollection
+```
 
 ## Usage
 
-The model must have a **parent_id** attributes :
+The model must have a `parent_id` attribute:
 
 ```php
 protected $fillable = [
@@ -19,26 +27,42 @@ protected $fillable = [
 ];
 ```
 
-and must use the following trait:
+and must use the `NestableTrait`:
 
 ```php
 use TypiCMS\NestableTrait;
+
+class Category extends Model
+{
+    use NestableTrait;
+}
 ```
 
-Now each time you get a collection of that model, it will be an instance of **TypiCMS\NestableCollection** in place of **Illuminate\Database\Eloquent\Collection**.
+Now each time you retrieve a collection of that model, it will be an instance of `TypiCMS\NestableCollection` instead of `Illuminate\Database\Eloquent\Collection`.
 
-If you want a tree of models, simply call the nest method on a collection ordered by parent_id asc :
+To get a tree of models, call the `nest()` method on a collection ordered by `parent_id`:
 
 ```php
-Model::orderBy('parent_id')->get()->nest();
+Category::orderBy('parent_id')->get()->nest();
 ```
 
-Of course you will probably want a position column as well. So you will have to order first by parent_id asc and then by position asc.
+You will probably want a `position` column as well, so order first by `parent_id` then by `position`:
 
-## Change the name of subcollections
+```php
+Category::orderBy('parent_id')->orderBy('position')->get()->nest();
+```
 
-By default, the name of the subcollections is **items**, but you can change it by calling the `childrenName($name)` method :
-For example if you want your subcollections being named **children**:
+## Custom parent column
+
+By default, the parent column is `parent_id`. You can change it with the `parentColumn()` method:
+
+```php
+$collection->parentColumn('category_id')->nest();
+```
+
+## Custom children name
+
+By default, subcollections are named `items`. You can change it with the `childrenName()` method:
 
 ```php
 $collection->childrenName('children')->nest();
@@ -46,51 +70,90 @@ $collection->childrenName('children')->nest();
 
 ## Indented and flattened list
 
-`listsFlattened()` method generate the tree as a flattened list with id as keys and title as values, perfect for select/option, for example :
+The `listsFlattened()` method generates the tree as a flattened list with id as keys and title as values, perfect for select/option elements:
 
 ```php
 [
-    '22' => 'Item 1 Title',
-    '10' => '    Child 1 Title',
-    '17' => '    Child 2 Title',
-    '14' => 'Item 2 Title',
+    22 => 'Item 1 Title',
+    10 => '    Child 1 Title',
+    17 => '    Child 2 Title',
+    14 => 'Item 2 Title',
 ]
 ```
 
-To use it, first call the `nest()` method, followed by the `listsFlattened()` method:
+First call `nest()`, then `listsFlattened()`:
 
 ```php
-Model::orderBy('parent_id')->get()->nest()->listsFlattened();
+Category::orderBy('parent_id')->get()->nest()->listsFlattened();
 ```
 
-By default it will look for a `title` column. You can send a custom column name as first parameter:
+By default it looks for a `title` column. Pass a custom column name as the first parameter:
 
 ```php
-Model::orderBy('parent_id')->get()->nest()->listsFlattened('name');
+$collection->nest()->listsFlattened('name');
 ```
 
-Four spaces are used to indent by default, to use your own use the `setIndent()` method, followed by the `listsFlattened()` method:
+Four spaces are used to indent by default. Use `setIndent()` to customize:
 
 ```php
-Model::orderBy('parent_id')->get()->nest()->setIndent('> ')->listsFlattened();
+$collection->nest()->setIndent('> ')->listsFlattened();
 ```
 
-Results:
+Result:
 
 ```php
 [
-    '22' => 'Item 1 Title',
-    '10' => '> Child 1 Title',
-    '17' => '> Child 2 Title',
-    '14' => 'Item 2 Title',
+    22 => 'Item 1 Title',
+    10 => '> Child 1 Title',
+    17 => '> Child 2 Title',
+    14 => 'Item 2 Title',
 ]
+```
+
+## Fully qualified flattened list
+
+The `listsFlattenedQualified()` method builds full paths instead of indentation:
+
+```php
+$collection->nest()->setIndent(' / ')->listsFlattenedQualified();
+```
+
+Result:
+
+```php
+[
+    22 => 'Item 1 Title',
+    10 => 'Item 1 Title / Child 1 Title',
+    17 => 'Item 1 Title / Child 2 Title',
+    14 => 'Item 2 Title',
+]
+```
+
+## Setting parent relations
+
+The `setParents()` method sets the `parent` relation on each nested item, so you can traverse up the tree without querying the database:
+
+```php
+$nested = Category::orderBy('parent_id')->get()->nest()->setParents();
+
+$nested[0]->items[0]->parent; // Returns the parent model
 ```
 
 ## Nesting a subtree
 
-This package remove items that have missing ancestor, this doesn’t allow you to nest a branch of a tree.
-To avoid this, you can use the `noCleaning()` method:
+By default, items with a missing ancestor are removed. To nest a branch of a tree, use the `noCleaning()` method:
 
 ```php
-Model::orderBy('parent_id')->get()->noCleaning()->nest();
+Category::orderBy('parent_id')->get()->noCleaning()->nest();
 ```
+
+## Testing
+
+```bash
+composer require pestphp/pest --dev
+vendor/bin/pest
+```
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENCE) for more information.
