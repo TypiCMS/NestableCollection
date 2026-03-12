@@ -25,19 +25,19 @@ function makeTree(): NestableCollection
     ]);
 }
 
-it('is an instance of Eloquent Collection', function () {
+it('is an instance of Eloquent Collection', function (): void {
     $collection = new NestableCollection;
 
     expect($collection)->toBeInstanceOf(Collection::class);
 });
 
-it('returns total count of items before nesting', function () {
+it('returns total count of items before nesting', function (): void {
     $collection = makeTree();
 
     expect($collection->total())->toBe(5)->and($collection->getTotal())->toBe(5);
 });
 
-it('nests items into a tree structure', function () {
+it('nests items into a tree structure', function (): void {
     $nested = makeTree()->nest();
 
     expect($nested)
@@ -58,13 +58,13 @@ it('nests items into a tree structure', function () {
         ->toBe('Grandchild 1.1.1');
 });
 
-it('preserves total count after nesting', function () {
+it('preserves total count after nesting', function (): void {
     $nested = makeTree()->nest();
 
     expect($nested->total())->toBe(5);
 });
 
-it('returns itself when parent column is empty', function () {
+it('returns itself when parent column is empty', function (): void {
     $collection = new NestableCollection([makeItem(1)]);
     $collection->parentColumn('');
 
@@ -73,7 +73,7 @@ it('returns itself when parent column is empty', function () {
     expect($result)->toHaveCount(1);
 });
 
-it('allows setting a custom parent column', function () {
+it('allows setting a custom parent column', function (): void {
     $item1 = new Item;
     $item1->id = 1;
     $item1->category_id = null;
@@ -90,7 +90,7 @@ it('allows setting a custom parent column', function () {
     expect($nested)->toHaveCount(1)->and($nested[0]->items)->toHaveCount(1);
 });
 
-it('allows setting a custom children name', function () {
+it('allows setting a custom children name', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'Root'),
         makeItem(2, 1, 'Child'),
@@ -101,7 +101,7 @@ it('allows setting a custom children name', function () {
     expect($nested[0]->children)->toHaveCount(1)->and($nested[0]->children[0]->title)->toBe('Child');
 });
 
-it('removes items with a missing ancestor by default', function () {
+it('removes items with a missing ancestor by default', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'Root'),
         makeItem(2, 1, 'Child'),
@@ -113,7 +113,7 @@ it('removes items with a missing ancestor by default', function () {
     expect($nested)->toHaveCount(1)->and($nested[0]->title)->toBe('Root');
 });
 
-it('keeps items with missing ancestor when noCleaning is set', function () {
+it('keeps items with missing ancestor when noCleaning is set', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'Root'),
         makeItem(3, 99, 'Orphan'),
@@ -124,7 +124,7 @@ it('keeps items with missing ancestor when noCleaning is set', function () {
     expect($nested)->toHaveCount(2);
 });
 
-it('removes items whose ancestor chain is broken', function () {
+it('removes items whose ancestor chain is broken', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'Root'),
         makeItem(2, 1, 'Child'),
@@ -137,7 +137,7 @@ it('removes items whose ancestor chain is broken', function () {
     expect($nested)->toHaveCount(1)->and($nested[0]->items)->toHaveCount(1);
 });
 
-it('detects missing ancestor via nest removing orphans', function () {
+it('detects missing ancestor via nest removing orphans', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'Root'),
         makeItem(2, 1, 'Child'),
@@ -154,7 +154,7 @@ it('detects missing ancestor via nest removing orphans', function () {
         ->toBe('Child');
 });
 
-it('keeps root items that have no parent', function () {
+it('keeps root items that have no parent', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'Root'),
     ]);
@@ -164,7 +164,7 @@ it('keeps root items that have no parent', function () {
     expect($nested)->toHaveCount(1)->and($nested[0]->title)->toBe('Root');
 });
 
-it('flattens a nested collection with indentation', function () {
+it('flattens a nested collection with indentation', function (): void {
     $nested = makeTree()->nest();
     $flattened = $nested->listsFlattened('title');
 
@@ -180,14 +180,14 @@ it('flattens a nested collection with indentation', function () {
     ]);
 });
 
-it('flattens with custom indent characters', function () {
+it('flattens with custom indent characters', function (): void {
     $nested = makeTree()->nest();
     $flattened = $nested->setIndent('--')->listsFlattened('title');
 
     expect($flattened[2])->toBe('--Child 1.1')->and($flattened[5])->toBe('----Grandchild 1.1.1');
 });
 
-it('flattens with fully qualified paths', function () {
+it('flattens with fully qualified paths', function (): void {
     $nested = makeTree()->setIndent(' / ')->nest();
     $flattened = $nested->listsFlattenedQualified('title');
 
@@ -199,7 +199,7 @@ it('flattens with fully qualified paths', function () {
         ->toBe('Root 1 / Child 1.1 / Grandchild 1.1.1');
 });
 
-it('flattens with custom indent in qualified mode', function () {
+it('flattens with custom indent in qualified mode', function (): void {
     $nested = makeTree()->nest();
     $flattened = $nested->setIndent(' / ')->listsFlattenedQualified('title');
 
@@ -209,7 +209,7 @@ it('flattens with custom indent in qualified mode', function () {
         ->toBe('Root 1 / Child 1.1 / Grandchild 1.1.1');
 });
 
-it('sets parent relations recursively', function () {
+it('sets parent relations recursively', function (): void {
     $nested = makeTree()->nest();
     $nested->setParents();
 
@@ -219,21 +219,21 @@ it('sets parent relations recursively', function () {
     expect($child->getRelation('parent')->id)->toBe(1)->and($grandchild->getRelation('parent')->id)->toBe(2);
 });
 
-it('does not set parent relation on root items', function () {
+it('does not set parent relation on root items', function (): void {
     $nested = makeTree()->nest();
     $nested->setParents();
 
     expect($nested[0]->relationLoaded('parent'))->toBeFalse();
 });
 
-it('handles an empty collection', function () {
+it('handles an empty collection', function (): void {
     $collection = new NestableCollection;
     $nested = $collection->nest();
 
     expect($nested)->toHaveCount(0)->and($nested->total())->toBe(0);
 });
 
-it('handles a flat collection with no parents', function () {
+it('handles a flat collection with no parents', function (): void {
     $collection = new NestableCollection([
         makeItem(1, null, 'A'),
         makeItem(2, null, 'B'),
@@ -245,7 +245,7 @@ it('handles a flat collection with no parents', function () {
     expect($nested)->toHaveCount(3);
 });
 
-it('uses NestableCollection via NestableTrait', function () {
+it('uses NestableCollection via NestableTrait', function (): void {
     $collection = (new Item)->newCollection([makeItem(1)]);
 
     expect($collection)->toBeInstanceOf(NestableCollection::class);
