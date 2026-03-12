@@ -8,6 +8,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace TypiCMS;
 
 use Illuminate\Database\Eloquent\Collection;
@@ -116,7 +117,7 @@ class NestableCollection extends Collection
     }
 
     /**
-     * @param BaseCollection<array-key, Model>|null $baseCollection
+     * @param  BaseCollection<array-key, Model>|null  $baseCollection
      * @param  array<int|string, string>  $flattened
      * @return array<int|string, string>
      */
@@ -157,7 +158,7 @@ class NestableCollection extends Collection
     }
 
     /**
-     * @param BaseCollection<array-key, Model>|null $baseCollection
+     * @param  BaseCollection<array-key, Model>|null  $baseCollection
      * @param  array<int|string, string>  $flattened
      * @return array<int|string, string>
      */
@@ -201,7 +202,7 @@ class NestableCollection extends Collection
     protected function rejectOrphans(): static
     {
         /** @var static */
-        return $this->reject(fn($item): bool => $item->{$this->parentColumn} && $this->anAncestorIsMissing($item));
+        return $this->reject(fn ($item): bool => $item->{$this->parentColumn} && $this->anAncestorIsMissing($item));
     }
 
     /**
@@ -217,9 +218,11 @@ class NestableCollection extends Collection
             if (! $item->{$this->parentColumn}) {
                 continue;
             }
+
             if (! isset($collection[$item->{$this->parentColumn}])) {
                 continue;
             }
+
             /** @var BaseCollection<array-key, Model> $parentChildren */
             $parentChildren = $collection[$item->{$this->parentColumn}]->{$this->childrenName};
             $parentChildren->push($item);
@@ -256,7 +259,7 @@ class NestableCollection extends Collection
     {
         /** @var Model $item */
         foreach ($baseCollection as $item) {
-            if ($model instanceof \Illuminate\Database\Eloquent\Model) {
+            if ($model instanceof Model) {
                 $item->setRelation($this->parentRelation, $model);
             }
 

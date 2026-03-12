@@ -9,7 +9,7 @@ trait NestableTrait
     /**
      * Return a custom nested collection.
      */
-    public function newCollection(array $models = []): \TypiCMS\NestableCollection
+    public function newCollection(array $models = []): NestableCollection
     {
         return new NestableCollection($models);
     }
