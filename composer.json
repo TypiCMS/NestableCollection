@@ -18,13 +18,13 @@
         }
     ],
     "require": {
-        "illuminate/database": "~12.0",
-        "illuminate/support": "~12.0"
         "php": "^8.3",
+        "illuminate/database": "~12.0|~13.0",
+        "illuminate/support": "~12.0|~13.0"
     },
     "require-dev": {
-        "illuminate/database": "~12.0",
-        "illuminate/support": "~12.0",
+        "illuminate/database": "~12.0|~13.0",
+        "illuminate/support": "~12.0|~13.0",
         "nunomaduro/larastan": "^3.1",
         "orchestra/testbench": "^10.0"
     },
