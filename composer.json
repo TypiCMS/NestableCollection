@@ -25,7 +25,7 @@
     "require-dev": {
         "illuminate/database": "~12.0|~13.0",
         "illuminate/support": "~12.0|~13.0",
-        "nunomaduro/larastan": "^3.1",
+        "larastan/larastan": "^3.4",
         "orchestra/testbench": "^10.0",
         "pestphp/pest": "^4.4",
         "laravel/pint": "^1.28",
