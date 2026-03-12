@@ -1,7 +1,9 @@
 # NestableCollection
 
-[![Tests](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/TypiCMS/NestableCollection/blob/master/LICENCE)
+[![Tests](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/tests.yml)
+[![PHPStan](https://github.com/TypiCMS/NestableCollection/actions/workflows/phpstan.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/phpstan.yml)
+[![Pint](https://github.com/TypiCMS/NestableCollection/actions/workflows/pint.yml/badge.svg)](https://github.com/TypiCMS/NestableCollection/actions/workflows/pint.yml)
 
 A Laravel package that extends Eloquent collections to handle nested items following the adjacency list model.
 

@@ -10,8 +10,15 @@
 namespace TypiCMS;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection as BaseCollection;
 
+/**
+ * @template TKey of array-key
+ * @template TModel of Model
+ *
+ * @extends Collection<TKey, TModel>
+ */
 class NestableCollection extends Collection
 {
     protected int $total;
@@ -26,6 +33,7 @@ class NestableCollection extends Collection
 
     protected string $parentRelation = 'parent';
 
+    /** @param array<TKey, TModel> $items */
     public function __construct(array $items = [])
     {
         parent::__construct($items);
@@ -33,6 +41,7 @@ class NestableCollection extends Collection
         $this->total = count($items);
     }
 
+    /** @return self<TKey, TModel> */
     public function parentColumn(string $name): self
     {
         $this->parentColumn = $name;
@@ -40,6 +49,7 @@ class NestableCollection extends Collection
         return $this;
     }
 
+    /** @return self<TKey, TModel> */
     public function childrenName(string $name): self
     {
         $this->childrenName = $name;
@@ -47,6 +57,7 @@ class NestableCollection extends Collection
         return $this;
     }
 
+    /** @return self<TKey, TModel> */
     public function setIndent(string $indentChars): self
     {
         $this->indentChars = $indentChars;
@@ -54,6 +65,7 @@ class NestableCollection extends Collection
         return $this;
     }
 
+    /** @return self<TKey, TModel> */
     public function noCleaning(): self
     {
         $this->removeItemsWithMissingAncestor = false;
@@ -61,13 +73,16 @@ class NestableCollection extends Collection
         return $this;
     }
 
+    /** @return self<TKey, TModel> */
     public function nest(): self
     {
-        if (!$this->parentColumn) {
+        if (! $this->parentColumn) {
             return $this;
         }
 
-        $this->items = $this->getDictionary();
+        /** @var array<TKey, TModel> $dictionary */
+        $dictionary = $this->getDictionary();
+        $this->items = $dictionary;
 
         $this->initializeChildrenCollections();
 
@@ -80,19 +95,30 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    public function anAncestorIsMissing(mixed $item): bool
+    public function anAncestorIsMissing(Model $item): bool
     {
-        if (!$item->{$this->parentColumn}) {
+        /** @var int|string|null $parentId */
+        $parentId = $item->{$this->parentColumn};
+
+        if (! $parentId) {
             return false;
         }
 
-        if (!$this->has($item->{$this->parentColumn})) {
+        if (! $this->has($parentId)) {
             return true;
         }
 
-        return $this->anAncestorIsMissing($this[$item->{$this->parentColumn}]);
+        /** @var TModel $parent */
+        $parent = $this[$parentId];
+
+        return $this->anAncestorIsMissing($parent);
     }
 
+    /**
+     * @param  BaseCollection<array-key, Model>|null  $collection
+     * @param  array<int|string, string>  $flattened
+     * @return array<int|string, string>
+     */
     public function listsFlattened(
         string $column = 'title',
         ?BaseCollection $collection = null,
@@ -104,14 +130,20 @@ class NestableCollection extends Collection
         $collection ??= $this;
         $indentChars ??= $this->indentChars;
 
+        /** @var Model $item */
         foreach ($collection as $item) {
             $itemString = $this->buildFlattenedLabel($item, $column, $indentChars, $level, $parentString);
-            $flattened[$item->id] = $itemString;
+            /** @var int|string $key */
+            $key = $item->getKey();
+            $flattened[$key] = $itemString;
 
-            if ($item->{$this->childrenName}->isNotEmpty()) {
+            /** @var BaseCollection<array-key, Model> $children */
+            $children = $item->{$this->childrenName};
+
+            if ($children->isNotEmpty()) {
                 $this->listsFlattened(
                     $column,
-                    $item->{$this->childrenName},
+                    $children,
                     $level + 1,
                     $flattened,
                     $indentChars,
@@ -123,6 +155,11 @@ class NestableCollection extends Collection
         return $flattened;
     }
 
+    /**
+     * @param  BaseCollection<array-key, Model>|null  $collection
+     * @param  array<int|string, string>  $flattened
+     * @return array<int|string, string>
+     */
     public function listsFlattenedQualified(
         string $column = 'title',
         ?BaseCollection $collection = null,
@@ -143,6 +180,7 @@ class NestableCollection extends Collection
         return $this->total();
     }
 
+    /** @return self<TKey, TModel> */
     public function setParents(): self
     {
         $this->setParentsRecursive($this);
@@ -153,62 +191,77 @@ class NestableCollection extends Collection
     protected function initializeChildrenCollections(): void
     {
         $this->each(function ($item): void {
-            if (!$item->{$this->childrenName}) {
-                $item->{$this->childrenName} = new BaseCollection();
+            if (! $item->{$this->childrenName}) {
+                $item->{$this->childrenName} = new BaseCollection;
             }
         });
     }
 
     protected function rejectOrphans(): static
     {
+        /** @var static */
         return $this->reject(function ($item) {
             return $item->{$this->parentColumn} && $this->anAncestorIsMissing($item);
         });
     }
 
-    /** @return array<int, mixed> */
+    /**
+     * @param  self<array-key, Model>|BaseCollection<array-key, Model>  $collection
+     * @return array<int, mixed>
+     */
     protected function assignChildrenToParents(self|BaseCollection $collection): array
     {
         $keysToDelete = [];
 
+        /** @var Model $item */
         foreach ($collection as $item) {
-            if (!$item->{$this->parentColumn} || !isset($collection[$item->{$this->parentColumn}])) {
+            if (! $item->{$this->parentColumn} || ! isset($collection[$item->{$this->parentColumn}])) {
                 continue;
             }
 
-            $collection[$item->{$this->parentColumn}]->{$this->childrenName}->push($item);
-            $keysToDelete[] = $item->id;
+            /** @var BaseCollection<array-key, Model> $parentChildren */
+            $parentChildren = $collection[$item->{$this->parentColumn}]->{$this->childrenName};
+            $parentChildren->push($item);
+            $keysToDelete[] = $item->getKey();
         }
 
         return $keysToDelete;
     }
 
     protected function buildFlattenedLabel(
-        mixed $item,
+        Model $item,
         string $column,
         string $indentChars,
         int $level,
         mixed $parentString,
     ): string {
-        if (!$parentString) {
-            return str_repeat($indentChars, $level) . $item->{$column};
+        /** @var string $value */
+        $value = $item->{$column};
+
+        if (! $parentString) {
+            return str_repeat($indentChars, $level).$value;
         }
 
         if ($parentString === true) {
-            return $item->{$column};
+            return $value;
         }
 
-        return $parentString . $indentChars . $item->{$column};
+        /** @var string $parentString */
+        return $parentString.$indentChars.$value;
     }
 
-    protected function setParentsRecursive(BaseCollection $items, mixed $parent = null): void
+    /** @param BaseCollection<array-key, Model> $items */
+    protected function setParentsRecursive(BaseCollection $items, ?Model $parent = null): void
     {
+        /** @var Model $item */
         foreach ($items as $item) {
             if ($parent) {
                 $item->setRelation($this->parentRelation, $parent);
             }
 
-            $this->setParentsRecursive($item->{$this->childrenName}, $item);
+            /** @var BaseCollection<array-key, Model> $children */
+            $children = $item->{$this->childrenName};
+            $this->setParentsRecursive($children, $item);
         }
     }
 }

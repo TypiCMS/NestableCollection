@@ -173,9 +173,9 @@ it('flattens a nested collection with indentation', function () {
 
     expect($flattened)->toEqual([
         1 => 'Root 1',
-        2 => $nbsp4 . 'Child 1.1',
-        5 => $nbsp8 . 'Grandchild 1.1.1',
-        3 => $nbsp4 . 'Child 1.2',
+        2 => $nbsp4.'Child 1.1',
+        5 => $nbsp8.'Grandchild 1.1.1',
+        3 => $nbsp4.'Child 1.2',
         4 => 'Root 2',
     ]);
 });
