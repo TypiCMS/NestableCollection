@@ -9,7 +9,7 @@ function makeItem(int $id, ?int $parentId = null, string $title = ''): Item
     $item = new Item;
     $item->id = $id;
     $item->parent_id = $parentId;
-    $item->title = $title ?: "Item {$id}";
+    $item->title = $title ?: 'Item ' . $id;
 
     return $item;
 }

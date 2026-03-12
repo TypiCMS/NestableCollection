@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TypiCMS;
 
 trait NestableTrait
 {
     /**
      * Return a custom nested collection.
-     *
-     * @return NestableCollection
      */
-    public function newCollection(array $models = [])
+    public function newCollection(array $models = []): \TypiCMS\NestableCollection
     {
         return new NestableCollection($models);
     }
