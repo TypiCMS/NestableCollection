@@ -10,14 +10,13 @@
 namespace TypiCMS;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as BaseCollection;
 
 class NestableCollection extends Collection
 {
     protected int $total;
 
-    protected string $parentColumn;
+    protected string $parentColumn = 'parent_id';
 
     protected bool $removeItemsWithMissingAncestor = true;
 
@@ -30,11 +29,11 @@ class NestableCollection extends Collection
     public function __construct(array $items = [])
     {
         parent::__construct($items);
-        $this->parentColumn = 'parent_id';
+
         $this->total = count($items);
     }
 
-    public function parentColumn($name)
+    public function parentColumn(string $name): self
     {
         $this->parentColumn = $name;
 
@@ -48,89 +47,6 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    /**
-     * Nest items.
-     */
-    public function nest(): self
-    {
-        $parentColumn = $this->parentColumn;
-        if (!$parentColumn) {
-            return $this;
-        }
-
-        // Set id as keys.
-        $this->items = $this->getDictionary();
-
-        $keysToDelete = [];
-
-        // Add empty collection to each items.
-        $collection = $this->each(function ($item) {
-            if (!$item->{$this->childrenName}) {
-                $item->{$this->childrenName} = app()->make('Illuminate\Support\Collection');
-            }
-        });
-
-        // Remove items with missing ancestor.
-        if ($this->removeItemsWithMissingAncestor) {
-            $collection = $this->reject(function ($item) use ($parentColumn) {
-                if ($item->{$parentColumn}) {
-                    $missingAncestor = $this->anAncestorIsMissing($item);
-
-                    return $missingAncestor;
-                }
-            });
-        }
-
-        // Add items to children collection.
-        foreach ($collection->items as $item) {
-            if ($item->{$parentColumn} && isset($collection[$item->{$parentColumn}])) {
-                $collection[$item->{$parentColumn}]->{$this->childrenName}->push($item);
-                // @phpstan-ignore-next-line
-                $keysToDelete[] = $item->id;
-            }
-        }
-
-        // Delete moved items.
-        $this->items = array_values(Arr::except($collection->items, $keysToDelete));
-
-        return $this;
-    }
-
-    /**
-     * Recursive function that flatten a nested Collection
-     * with characters (default is four spaces).
-     */
-    public function listsFlattened(string $column = 'title', BaseCollection $collection = null, int $level = 0, array &$flattened = [], ?string $indentChars = null, mixed $parentString = null): array
-    {
-        $collection = $collection ?: $this;
-        $indentChars = $indentChars ?: $this->indentChars;
-        foreach ($collection as $item) {
-            if ($parentString) {
-                $item_string = ($parentString === true) ? $item->{$column} : $parentString . $indentChars . $item->{$column};
-            } else {
-                $item_string = str_repeat($indentChars, $level) . $item->{$column};
-            }
-
-            $flattened[$item->id] = $item_string;
-            if ($item->{$this->childrenName}) {
-                $this->listsFlattened($column, $item->{$this->childrenName}, $level + 1, $flattened, $indentChars, ($parentString) ? $item_string : null);
-            }
-        }
-
-        return $flattened;
-    }
-
-    /**
-     * Returns a fully qualified version of listsFlattened.
-     */
-    public function listsFlattenedQualified(string $column = 'title', BaseCollection $collection = null, int $level = 0, array &$flattened = [], ?string $indentChars = null): array
-    {
-        return $this->listsFlattened($column, $collection, $level, $flattened, $indentChars, true);
-    }
-
-    /**
-     * Change the default indent characters when flattening lists.
-     */
     public function setIndent(string $indentChars): self
     {
         $this->indentChars = $indentChars;
@@ -138,9 +54,6 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    /**
-     * Force keeping items that have a missing ancestor.
-     */
     public function noCleaning(): self
     {
         $this->removeItemsWithMissingAncestor = false;
@@ -148,44 +61,88 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    /**
-     * Check if an ancestor is missing.
-     */
-    public function anAncestorIsMissing(mixed $item): bool
+    public function nest(): self
     {
-        $parentColumn = $this->parentColumn;
-        if (!$item->{$parentColumn}) {
-            return false;
+        if (!$this->parentColumn) {
+            return $this;
         }
-        if (!$this->has($item->{$parentColumn})) {
-            return true;
-        }
-        $parent = $this[$item->{$parentColumn}];
 
-        return $this->anAncestorIsMissing($parent);
+        $this->items = $this->getDictionary();
+
+        $this->initializeChildrenCollections();
+
+        $collection = $this->removeItemsWithMissingAncestor ? $this->rejectOrphans() : $this;
+
+        $keysToDelete = $this->assignChildrenToParents($collection);
+
+        $this->items = array_values($collection->except($keysToDelete)->all());
+
+        return $this;
     }
 
-    /**
-     * Get total items in nested collection.
-     */
+    public function anAncestorIsMissing(mixed $item): bool
+    {
+        if (!$item->{$this->parentColumn}) {
+            return false;
+        }
+
+        if (!$this->has($item->{$this->parentColumn})) {
+            return true;
+        }
+
+        return $this->anAncestorIsMissing($this[$item->{$this->parentColumn}]);
+    }
+
+    public function listsFlattened(
+        string $column = 'title',
+        ?BaseCollection $collection = null,
+        int $level = 0,
+        array &$flattened = [],
+        ?string $indentChars = null,
+        mixed $parentString = null,
+    ): array {
+        $collection ??= $this;
+        $indentChars ??= $this->indentChars;
+
+        foreach ($collection as $item) {
+            $itemString = $this->buildFlattenedLabel($item, $column, $indentChars, $level, $parentString);
+            $flattened[$item->id] = $itemString;
+
+            if ($item->{$this->childrenName}->isNotEmpty()) {
+                $this->listsFlattened(
+                    $column,
+                    $item->{$this->childrenName},
+                    $level + 1,
+                    $flattened,
+                    $indentChars,
+                    $parentString ? $itemString : null,
+                );
+            }
+        }
+
+        return $flattened;
+    }
+
+    public function listsFlattenedQualified(
+        string $column = 'title',
+        ?BaseCollection $collection = null,
+        int $level = 0,
+        array &$flattened = [],
+        ?string $indentChars = null,
+    ): array {
+        return $this->listsFlattened($column, $collection, $level, $flattened, $indentChars, true);
+    }
+
     public function total(): int
     {
         return $this->total;
     }
 
-    /**
-     * Get total items for laravel 4 compatibility.
-     */
     public function getTotal(): int
     {
         return $this->total();
     }
 
-    /**
-     * Sets the $item->parent relation for each item in the
-     * NestableCollection to be the parent it has in the collection
-     * so it can be used without querying the database.
-     */
     public function setParents(): self
     {
         $this->setParentsRecursive($this);
@@ -193,12 +150,64 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    protected function setParentsRecursive(BaseCollection &$items, &$parent = null): void
+    protected function initializeChildrenCollections(): void
+    {
+        $this->each(function ($item): void {
+            if (!$item->{$this->childrenName}) {
+                $item->{$this->childrenName} = new BaseCollection();
+            }
+        });
+    }
+
+    protected function rejectOrphans(): static
+    {
+        return $this->reject(function ($item) {
+            return $item->{$this->parentColumn} && $this->anAncestorIsMissing($item);
+        });
+    }
+
+    /** @return array<int, mixed> */
+    protected function assignChildrenToParents(self|BaseCollection $collection): array
+    {
+        $keysToDelete = [];
+
+        foreach ($collection as $item) {
+            if (!$item->{$this->parentColumn} || !isset($collection[$item->{$this->parentColumn}])) {
+                continue;
+            }
+
+            $collection[$item->{$this->parentColumn}]->{$this->childrenName}->push($item);
+            $keysToDelete[] = $item->id;
+        }
+
+        return $keysToDelete;
+    }
+
+    protected function buildFlattenedLabel(
+        mixed $item,
+        string $column,
+        string $indentChars,
+        int $level,
+        mixed $parentString,
+    ): string {
+        if (!$parentString) {
+            return str_repeat($indentChars, $level) . $item->{$column};
+        }
+
+        if ($parentString === true) {
+            return $item->{$column};
+        }
+
+        return $parentString . $indentChars . $item->{$column};
+    }
+
+    protected function setParentsRecursive(BaseCollection $items, mixed $parent = null): void
     {
         foreach ($items as $item) {
             if ($parent) {
                 $item->setRelation($this->parentRelation, $parent);
             }
+
             $this->setParentsRecursive($item->{$this->childrenName}, $item);
         }
     }
