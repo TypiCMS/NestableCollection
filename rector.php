@@ -9,7 +9,6 @@ return RectorConfig::configure()
         __DIR__.'/src',
         __DIR__.'/tests',
     ])
-    // uncomment to reach your current PHP version
     ->withPhpSets()
     ->withPreparedSets(
         deadCode: true,
